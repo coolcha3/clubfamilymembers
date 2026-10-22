@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <!-- Firebase SDK 로드 (v10 이상 모듈 방식) -->
-<script type="module">
-  // Firebase 라이브러리 불러오기
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  // 1단계에서 확인한 내 Firebase 설정 값 붙여넣기
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "...",
-    appId: "..."
-  };
-
-  // Firebase 및 Firestore 초기화
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // 글로벌 영역에서 사용할 수 있도록 window에 등록 (선택사항)
-  window.db = db;
-  window.dbFunctions = { collection, addDoc, getDocs, deleteDoc, doc };
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>패밀리 통합 관리 프로그램</title>
+    
+    <!-- Firebase SDK (v10 모듈) 및 Firestore 연동 -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { 
+        getFirestore, collection, addDoc, getDocs, setDoc, deleteDoc, doc 
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+      // 💡 [필수] 본인의 Firebase 콘솔 설정 값으로 변경해 주세요!
+      const firebaseConfig = {
+        apiKey: "AIzaSyBuG5x74QmzC7jnLdvzJiYHmlf1d1RspdI",
+        authDomain: "club-management-f7e29.firebaseapp.com",
+        projectId: "club-management-f7e29",
+        storageBucket: "club-management-f7e29.firebasestorage.app",
+        messagingSenderId: "205038756304",
+        appId: "1:205038756304:web:5d7e99d54a3a821b8699d5"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // 글로벌 전역 객체 등록
+      window.db = db;
+      window.fs = { collection, addDoc, getDocs, setDoc, deleteDoc, doc };
+    </script>
+
     <style>
         :root { --primary-color: #4a90e2; --bg-color: #f4f7f6; --card-bg: #ffffff; --text-color: #333; --border-color: #ddd; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; }
@@ -252,7 +254,7 @@
     </div>
 </div>
 
-<!-- 모달 1: 출석부 텍스트 생성 -->
+<!-- 모달 창 구역 -->
 <div id="generateTextModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('generateTextModal')">&times;</span>
@@ -269,7 +271,6 @@
     </div>
 </div>
 
-<!-- 모달 2: 회원 수정 -->
 <div id="editMemberModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('editMemberModal')">&times;</span>
@@ -296,7 +297,6 @@
     </div>
 </div>
 
-<!-- 모달 3: 기수원 관리 -->
 <div id="termMemberModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('termMemberModal')">&times;</span>
@@ -312,7 +312,6 @@
     </div>
 </div>
 
-<!-- 모달 4: 회비 금액 설정 -->
 <div id="feeSettingModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('feeSettingModal')">&times;</span>
@@ -326,15 +325,57 @@
     </div>
 </div>
 
+<!-- ================= JavaScript 메인 로직 ================= -->
 <script>
     var DAYS = ['일', '월', '화', '수', '목', '금', '토'];
-    var members = JSON.parse(localStorage.getItem('club_members')) || [];
-    var terms = JSON.parse(localStorage.getItem('club_terms')) || [];
-    var attendances = JSON.parse(localStorage.getItem('club_attendances')) || {};
-    var events = JSON.parse(localStorage.getItem('club_events')) || [];
-    var feeSettings = JSON.parse(localStorage.getItem('club_fees')) || { regular: 10000, performer: 5000, eventDay: 7000 };
+    var members = [];
+    var terms = [];
+    var attendances = {};
+    var events = [];
+    var feeSettings = { regular: 10000, performer: 5000, eventDay: 7000 };
 
     document.getElementById('attDate').value = new Date().toISOString().substring(0, 10);
+
+    // [Firebase] 초기 데이터 가져오기
+    async function loadAllFirebaseData() {
+        if (!window.db) {
+            setTimeout(loadAllFirebaseData, 200);
+            return;
+        }
+        try {
+            // 1. 회원 목록
+            const mSnapshot = await window.fs.getDocs(window.fs.collection(window.db, "members"));
+            members = [];
+            mSnapshot.forEach(doc => members.push({ id: doc.id, ...doc.data() }));
+
+            // 2. 기수 목록
+            const tSnapshot = await window.fs.getDocs(window.fs.collection(window.db, "terms"));
+            terms = [];
+            tSnapshot.forEach(doc => terms.push({ id: doc.id, ...doc.data() }));
+
+            // 3. 출석 기록
+            const aSnapshot = await window.fs.getDocs(window.fs.collection(window.db, "attendances"));
+            attendances = {};
+            aSnapshot.forEach(doc => attendances[doc.id] = doc.data());
+
+            // 4. 이벤트 목록
+            const eSnapshot = await window.fs.getDocs(window.fs.collection(window.db, "events"));
+            events = [];
+            eSnapshot.forEach(doc => events.push({ id: doc.id, ...doc.data() }));
+
+            // 5. 회비 설정
+            const fSnapshot = await window.fs.getDocs(window.fs.collection(window.db, "settings"));
+            fSnapshot.forEach(doc => {
+                if(doc.id === 'fees') feeSettings = doc.data();
+            });
+
+            renderMembers();
+        } catch (e) {
+            console.error("Firebase 데이터 읽기 실패:", e);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadAllFirebaseData);
 
     function switchTab(btnElement, tabId) {
         var btns = document.querySelectorAll('.tab-btn');
@@ -369,6 +410,251 @@
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // [회원 추가] Firebase Firestore 연동
+    async function addMember(e) {
+        e.preventDefault();
+        const newMember = {
+            nickname: document.getElementById('mNickname').value,
+            name: document.getElementById('mName').value,
+            birth: document.getElementById('mBirth').value,
+            age: document.getElementById('mAge').value,
+            role: document.getElementById('mRole').value,
+            phone: document.getElementById('mPhone').value,
+            email: document.getElementById('mEmail').value
+        };
+
+        try {
+            const docRef = await window.fs.addDoc(window.fs.collection(window.db, "members"), newMember);
+            members.push({ id: docRef.id, ...newMember });
+            renderMembers();
+            document.getElementById('memberForm').reset();
+            alert("회원이 추가되었습니다!");
+        } catch (error) {
+            console.error("회원 추가 오류:", error);
+        }
+    }
+
+    function renderMembers() {
+        var tbody = document.getElementById('memberTableBody');
+        tbody.innerHTML = '';
+        members.forEach(function(m) {
+            tbody.innerHTML += '<tr><td>' + m.nickname + '</td><td>' + m.name + '</td><td>' + m.birth + ' (' + m.age + '세)</td><td><span class="badge badge-regular">' + (m.role || '일반회원') + '</span></td><td>' + m.phone + '</td><td>' + (m.email || '-') + '</td><td><button class="btn-secondary btn-sm" onclick="openEditMemberModal(\'' + m.id + '\')">수정</button> <button class="delete-btn btn-sm" onclick="deleteMember(\'' + m.id + '\')">삭제</button></td></tr>';
+        });
+    }
+
+    function openEditMemberModal(id) {
+        var m = members.find(function(mem) { return mem.id == id; });
+        if(!m) return;
+        document.getElementById('editMId').value = m.id;
+        document.getElementById('editMNickname').value = m.nickname;
+        document.getElementById('editMName').value = m.name;
+        document.getElementById('editMBirth').value = m.birth;
+        document.getElementById('editMAge').value = m.age;
+        document.getElementById('editMRole').value = m.role || '일반회원';
+        document.getElementById('editMPhone').value = m.phone;
+        document.getElementById('editMEmail').value = m.email || '';
+        document.getElementById('editMemberModal').style.display = 'block';
+    }
+
+    // [회원 수정] Firebase Firestore 연동
+    async function saveMemberEdit() {
+        var id = document.getElementById('editMId').value;
+        var m = members.find(function(mem) { return mem.id == id; });
+        if(m) {
+            m.nickname = document.getElementById('editMNickname').value;
+            m.name = document.getElementById('editMName').value;
+            m.birth = document.getElementById('editMBirth').value;
+            m.age = document.getElementById('editMAge').value;
+            m.role = document.getElementById('editMRole').value;
+            m.phone = document.getElementById('editMPhone').value;
+            m.email = document.getElementById('editMEmail').value;
+
+            try {
+                await window.fs.setDoc(window.fs.doc(window.db, "members", id), {
+                    nickname: m.nickname, name: m.name, birth: m.birth,
+                    age: m.age, role: m.role, phone: m.phone, email: m.email
+                });
+                renderMembers(); 
+                closeModal('editMemberModal');
+            } catch(e) { console.error("수정 실패:", e); }
+        }
+    }
+
+    // [회원 삭제] Firebase Firestore 연동
+    async function deleteMember(id) {
+        if(confirm('정말 삭제하시겠습니까?')) {
+            try {
+                await window.fs.deleteDoc(window.fs.doc(window.db, "members", id));
+                members = members.filter(function(m) { return m.id != id; });
+                renderMembers();
+            } catch(e) { console.error("삭제 실패:", e); }
+        }
+    }
+
+    // [기수 추가] Firebase 연동
+    async function addTerm(e) {
+        e.preventDefault();
+        const newTerm = {
+            name: document.getElementById('termName').value,
+            startDate: document.getElementById('termStartDate').value,
+            endDate: document.getElementById('termEndDate').value,
+            showDate: document.getElementById('termShowDate').value || '',
+            members: {}
+        };
+        try {
+            const docRef = await window.fs.addDoc(window.fs.collection(window.db, "terms"), newTerm);
+            terms.push({ id: docRef.id, ...newTerm });
+            renderTerms();
+            document.getElementById('termForm').reset();
+        } catch(e) { console.error("기수 추가 실패:", e); }
+    }
+
+    function renderTerms() {
+        var tbody = document.getElementById('termTableBody');
+        tbody.innerHTML = '';
+        terms.forEach(function(t) {
+            var memberListStr = [];
+            Object.keys(t.members || {}).forEach(function(mId) {
+                var m = members.find(function(mem) { return mem.id == mId; });
+                if(m) { memberListStr.push(m.nickname + '(' + (t.members[mId].role || '기수원') + ')'); }
+            });
+            tbody.innerHTML += '<tr><td><strong>' + t.name + '</strong></td><td>' + t.startDate + ' ~ ' + t.endDate + (t.showDate ? '<br><small style="color:#d9534f;">🎭 공연일: ' + t.showDate + '</small>' : '') + '</td><td>' + (memberListStr.length > 0 ? memberListStr.join(', ') : '기수원 없음') + '</td><td><button class="btn-success btn-sm" onclick="openTermMemberModal(\'' + t.id + '\')">➕ 기수원 관리</button> <button class="delete-btn btn-sm" onclick="deleteTerm(\'' + t.id + '\')">삭제</button></td></tr>';
+        });
+    }
+
+    function openTermMemberModal(termId) {
+        document.getElementById('currentTermId').value = termId;
+        var term = terms.find(function(t) { return t.id == termId; });
+        document.getElementById('termMemberTitle').innerText = term.name + ' 기수원 및 직책 관리';
+        var tbody = document.getElementById('termMemberListBody');
+        tbody.innerHTML = '';
+
+        members.forEach(function(m) {
+            var isMember = term.members && term.members[m.id];
+            var currentRole = isMember ? term.members[m.id].role : '기수원';
+            tbody.innerHTML += '<tr><td><input type="checkbox" id="chk-term-' + m.id + '" ' + (isMember ? 'checked' : '') + '></td><td>' + m.nickname + ' (' + m.name + ')</td><td><select id="role-term-' + m.id + '"><option value="기수원" ' + (currentRole === '기수원' ? 'selected' : '') + '>기수원</option><option value="기장" ' + (currentRole === '기장' ? 'selected' : '') + '>기장</option><option value="부기장" ' + (currentRole === '부기장' ? 'selected' : '') + '>부기장</option><option value="총무" ' + (currentRole === '총무' ? 'selected' : '') + '>총무</option></select></td></tr>';
+        });
+        document.getElementById('termMemberModal').style.display = 'block';
+    }
+
+    async function saveTermMembers() {
+        var termId = document.getElementById('currentTermId').value;
+        var term = terms.find(function(t) { return t.id == termId; });
+        if(!term) return;
+        term.members = {};
+        members.forEach(function(m) {
+            var chkBox = document.getElementById('chk-term-' + m.id);
+            if(chkBox && chkBox.checked) {
+                var roleSelect = document.getElementById('role-term-' + m.id);
+                term.members[m.id] = { role: roleSelect ? roleSelect.value : '기수원' };
+            }
+        });
+        try {
+            await window.fs.setDoc(window.fs.doc(window.db, "terms", termId), term);
+            renderTerms(); 
+            closeModal('termMemberModal');
+        } catch(e) { console.error("기수원 저장 실패:", e); }
+    }
+
+    async function deleteTerm(id) {
+        if(confirm('기수 정보를 삭제하시겠습니까?')) {
+            try {
+                await window.fs.deleteDoc(window.fs.doc(window.db, "terms", id));
+                terms = terms.filter(function(t) { return t.id != id; });
+                renderTerms();
+            } catch(e) { console.error("삭제 실패:", e); }
+        }
+    }
+
+    function getPreviousAttendanceCount(memberId, currentDate) {
+        var count = 0;
+        var allDates = Object.keys(attendances).sort();
+        for (var i=0; i<allDates.length; i++) {
+            if (allDates[i] >= currentDate) break;
+            if (attendances[allDates[i]][memberId] && attendances[allDates[i]][memberId].attended) count++;
+        }
+        return count;
+    }
+
+    function getBelongingTerm(memberId, dateStr) {
+        for(var i=0; i<terms.length; i++) {
+            var t = terms[i];
+            if(dateStr >= t.startDate && dateStr <= t.endDate && t.members && t.members[memberId]) return t;
+        }
+        return null;
+    }
+
+    function loadAttendance() {
+        var date = document.getElementById('attDate').value;
+        if(!date) return;
+        document.getElementById('attDayOfWeek').innerText = '(' + getDayName(date) + '요일)';
+        if(!attendances[date]) attendances[date] = {};
+        var tbody = document.getElementById('attendanceTableBody');
+        tbody.innerHTML = '';
+
+        members.forEach(function(m) {
+            var attData = attendances[date][m.id] || { attended: false, type: 'regular', lessons: { pre: false, review: false, main: false, after10: false }, paid: false };
+            var prevCount = getPreviousAttendanceCount(m.id, date);
+            var isFirst = (prevCount === 0);
+            var belongingTerm = getBelongingTerm(m.id, date);
+            var isShowDay = belongingTerm && belongingTerm.showDate === date;
+            var selectedType = attData.type || (isFirst ? 'free' : (isShowDay ? 'term_show' : 'regular'));
+            var feeText = "";
+
+            if(selectedType === 'free') feeText = " (무료)";
+            else if(selectedType === 'regular') feeText = ' (' + feeSettings.regular.toLocaleString() + '원)';
+            else if(selectedType === 'performer') feeText = ' (' + feeSettings.performer.toLocaleString() + '원)';
+            else if(selectedType === 'eventDay') feeText = ' (' + feeSettings.eventDay.toLocaleString() + '원)';
+            else if(selectedType === 'term_show') feeText = " (5,000원 - 기수공연일)";
+            else if(selectedType.indexOf('term_') === 0) feeText = ' (' + selectedType.replace('term_', '') + ' 무료입장)';
+
+            var l = attData.lessons || {};
+            tbody.innerHTML += '<tr><td><strong>' + m.nickname + '</strong> (' + m.name + ')<br><small style="color:#666;">' + (m.role || '일반회원') + '</small></td><td><div class="checkbox-group"><label><input type="checkbox" ' + (l.pre ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', \'' + m.id + '\', \'pre\', this.checked)"> 앞강습</label><label><input type="checkbox" ' + (l.review ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', \'' + m.id + '\', \'review\', this.checked)"> 복습</label><label><input type="checkbox" ' + (l.main ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', \'' + m.id + '\', \'main\', this.checked)"> 본강습</label><label><input type="checkbox" ' + (l.after10 ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', \'' + m.id + '\', \'after10\', this.checked)"> 10시이후</label></div></td><td><input type="checkbox" ' + (attData.attended ? 'checked' : '') + ' onchange="toggleAttField(\'' + date + '\', \'' + m.id + '\', \'attended\', this.checked)"> <select onchange="toggleAttField(\'' + date + '\', \'' + m.id + '\', \'type\', this.value)" ' + (!attData.attended ? 'disabled' : '') + '><option value="free" ' + (selectedType === 'free' ? 'selected' : '') + '>첫출석 (무료)</option><option value="regular" ' + (selectedType === 'regular' ? 'selected' : '') + '>정기출석 (' + feeSettings.regular.toLocaleString() + '원)</option><option value="performer" ' + (selectedType === 'performer' ? 'selected' : '') + '>공연자출석 (' + feeSettings.performer.toLocaleString() + '원)</option><option value="eventDay" ' + (selectedType === 'eventDay' ? 'selected' : '') + '>행사일출석 (' + feeSettings.eventDay.toLocaleString() + '원)</option>' + (belongingTerm ? '<option value="term_' + belongingTerm.name + '" ' + (selectedType === 'term_' + belongingTerm.name ? 'selected' : '') + '>' + belongingTerm.name + ' (무료입장)</option>' : '') + (belongingTerm && belongingTerm.showDate ? '<option value="term_show" ' + (selectedType === 'term_show' ? 'selected' : '') + '>🎭 ' + belongingTerm.name + ' 공연일 (5,000원)</option>' : '') + '</select></td><td>' + ((selectedType === 'free' || (selectedType.indexOf('term_') === 0 && selectedType !== 'term_show')) ? '<strong>무료 대상</strong>' : '<input type="checkbox" ' + (attData.paid ? 'checked' : '') + ' ' + (!attData.attended ? 'disabled' : '') + ' onchange="toggleAttField(\'' + date + '\', \'' + m.id + '\', \'paid\', this.checked)"> <span>' + feeText + '</span>') + '</td></tr>';
+        });
+    }
+
+    async function toggleLesson(date, memberId, lessonKey, value) {
+        if(!attendances[date]) attendances[date] = {};
+        if(!attendances[date][memberId]) attendances[date][memberId] = { attended: false, type: 'regular', lessons: {}, paid: false };
+        if(!attendances[date][memberId].lessons) attendances[date][memberId].lessons = {};
+        attendances[date][memberId].lessons[lessonKey] = value;
+        
+        try {
+            await window.fs.setDoc(window.fs.doc(window.db, "attendances", date), attendances[date]);
+        } catch(e) { console.error("출석 저장 실패:", e); }
+    }
+
+    async function toggleAttField(date, memberId, field, value) {
+        if(!attendances[date]) attendances[date] = {};
+        if(!attendances[date][memberId]) attendances[date][memberId] = { attended: false, type: 'regular', lessons: {}, paid: false };
+        attendances[date][memberId][field] = value;
+        if(field === 'attended' && !value) attendances[date][memberId].paid = false;
+        
+        try {
+            await window.fs.setDoc(window.fs.doc(window.db, "attendances", date), attendances[date]);
+            loadAttendance();
+        } catch(e) { console.error("출석 저장 실패:", e); }
+    }
+
+    function openFeeSettingModal() {
+        document.getElementById('feeRegular').value = feeSettings.regular;
+        document.getElementById('feePerformer').value = feeSettings.performer;
+        document.getElementById('feeEventDay').value = feeSettings.eventDay;
+        document.getElementById('feeSettingModal').style.display = 'block';
+    }
+
+    async function saveFeeSettings() {
+        feeSettings.regular = Number(document.getElementById('feeRegular').value);
+        feeSettings.performer = Number(document.getElementById('feePerformer').value);
+        feeSettings.eventDay = Number(document.getElementById('feeEventDay').value);
+
+        try {
+            await window.fs.setDoc(window.fs.doc(window.db, "settings", "fees"), feeSettings);
+            closeModal('feeSettingModal'); 
+            loadAttendance();
+        } catch(e) { console.error("설정 저장 실패:", e); }
+    }
 
     function openGenerateTextModal() {
         document.getElementById('generateTextModal').style.display = 'block';
@@ -429,206 +715,6 @@
         textarea.select();
         document.execCommand('copy');
         alert('출석부 텍스트가 복사되었습니다!');
-    }
-
-    function addMember(e) {
-        e.preventDefault();
-        members.push({
-            id: Date.now(),
-            nickname: document.getElementById('mNickname').value,
-            name: document.getElementById('mName').value,
-            birth: document.getElementById('mBirth').value,
-            age: document.getElementById('mAge').value,
-            role: document.getElementById('mRole').value,
-            phone: document.getElementById('mPhone').value,
-            email: document.getElementById('mEmail').value
-        });
-        saveData(); renderMembers(); document.getElementById('memberForm').reset();
-    }
-
-    function renderMembers() {
-        var tbody = document.getElementById('memberTableBody');
-        tbody.innerHTML = '';
-        members.forEach(function(m) {
-            tbody.innerHTML += '<tr><td>' + m.nickname + '</td><td>' + m.name + '</td><td>' + m.birth + ' (' + m.age + '세)</td><td><span class="badge badge-regular">' + (m.role || '일반회원') + '</span></td><td>' + m.phone + '</td><td>' + (m.email || '-') + '</td><td><button class="btn-secondary btn-sm" onclick="openEditMemberModal(' + m.id + ')">수정</button> <button class="delete-btn btn-sm" onclick="deleteMember(' + m.id + ')">삭제</button></td></tr>';
-        });
-    }
-
-    function openEditMemberModal(id) {
-        var m = members.find(function(mem) { return mem.id === id; });
-        if(!m) return;
-        document.getElementById('editMId').value = m.id;
-        document.getElementById('editMNickname').value = m.nickname;
-        document.getElementById('editMName').value = m.name;
-        document.getElementById('editMBirth').value = m.birth;
-        document.getElementById('editMAge').value = m.age;
-        document.getElementById('editMRole').value = m.role || '일반회원';
-        document.getElementById('editMPhone').value = m.phone;
-        document.getElementById('editMEmail').value = m.email || '';
-        document.getElementById('editMemberModal').style.display = 'block';
-    }
-
-    function saveMemberEdit() {
-        var id = Number(document.getElementById('editMId').value);
-        var m = members.find(function(mem) { return mem.id === id; });
-        if(m) {
-            m.nickname = document.getElementById('editMNickname').value;
-            m.name = document.getElementById('editMName').value;
-            m.birth = document.getElementById('editMBirth').value;
-            m.age = document.getElementById('editMAge').value;
-            m.role = document.getElementById('editMRole').value;
-            m.phone = document.getElementById('editMPhone').value;
-            m.email = document.getElementById('editMEmail').value;
-            saveData(); renderMembers(); closeModal('editMemberModal');
-        }
-    }
-
-    function deleteMember(id) {
-        if(confirm('정말 삭제하시겠습니까?')) {
-            members = members.filter(function(m) { return m.id !== id; });
-            saveData(); renderMembers();
-        }
-    }
-
-    function addTerm(e) {
-        e.preventDefault();
-        terms.push({
-            id: Date.now(),
-            name: document.getElementById('termName').value,
-            startDate: document.getElementById('termStartDate').value,
-            endDate: document.getElementById('termEndDate').value,
-            showDate: document.getElementById('termShowDate').value || '',
-            members: {}
-        });
-        saveData(); renderTerms(); document.getElementById('termForm').reset();
-    }
-
-    function renderTerms() {
-        var tbody = document.getElementById('termTableBody');
-        tbody.innerHTML = '';
-        terms.forEach(function(t) {
-            var memberListStr = [];
-            Object.keys(t.members || {}).forEach(function(mId) {
-                var m = members.find(function(mem) { return mem.id == mId; });
-                if(m) { memberListStr.push(m.nickname + '(' + (t.members[mId].role || '기수원') + ')'); }
-            });
-            tbody.innerHTML += '<tr><td><strong>' + t.name + '</strong></td><td>' + t.startDate + ' ~ ' + t.endDate + (t.showDate ? '<br><small style="color:#d9534f;">🎭 공연일: ' + t.showDate + '</small>' : '') + '</td><td>' + (memberListStr.length > 0 ? memberListStr.join(', ') : '기수원 없음') + '</td><td><button class="btn-success btn-sm" onclick="openTermMemberModal(' + t.id + ')">➕ 기수원 관리</button> <button class="delete-btn btn-sm" onclick="deleteTerm(' + t.id + ')">삭제</button></td></tr>';
-        });
-    }
-
-    function openTermMemberModal(termId) {
-        document.getElementById('currentTermId').value = termId;
-        var term = terms.find(function(t) { return t.id === termId; });
-        document.getElementById('termMemberTitle').innerText = term.name + ' 기수원 및 직책 관리';
-        var tbody = document.getElementById('termMemberListBody');
-        tbody.innerHTML = '';
-
-        members.forEach(function(m) {
-            var isMember = term.members && term.members[m.id];
-            var currentRole = isMember ? term.members[m.id].role : '기수원';
-            tbody.innerHTML += '<tr><td><input type="checkbox" id="chk-term-' + m.id + '" ' + (isMember ? 'checked' : '') + '></td><td>' + m.nickname + ' (' + m.name + ')</td><td><select id="role-term-' + m.id + '"><option value="기수원" ' + (currentRole === '기수원' ? 'selected' : '') + '>기수원</option><option value="기장" ' + (currentRole === '기장' ? 'selected' : '') + '>기장</option><option value="부기장" ' + (currentRole === '부기장' ? 'selected' : '') + '>부기장</option><option value="총무" ' + (currentRole === '총무' ? 'selected' : '') + '>총무</option></select></td></tr>';
-        });
-        document.getElementById('termMemberModal').style.display = 'block';
-    }
-
-    function saveTermMembers() {
-        var termId = Number(document.getElementById('currentTermId').value);
-        var term = terms.find(function(t) { return t.id === termId; });
-        if(!term) return;
-        term.members = {};
-        members.forEach(function(m) {
-            var chkBox = document.getElementById('chk-term-' + m.id);
-            if(chkBox && chkBox.checked) {
-                var roleSelect = document.getElementById('role-term-' + m.id);
-                term.members[m.id] = { role: roleSelect ? roleSelect.value : '기수원' };
-            }
-        });
-        saveData(); renderTerms(); closeModal('termMemberModal');
-    }
-
-    function deleteTerm(id) {
-        if(confirm('기수 정보를 삭제하시겠습니까?')) {
-            terms = terms.filter(function(t) { return t.id !== id; });
-            saveData(); renderTerms();
-        }
-    }
-
-    function getPreviousAttendanceCount(memberId, currentDate) {
-        var count = 0;
-        var allDates = Object.keys(attendances).sort();
-        for (var i=0; i<allDates.length; i++) {
-            if (allDates[i] >= currentDate) break;
-            if (attendances[allDates[i]][memberId] && attendances[allDates[i]][memberId].attended) count++;
-        }
-        return count;
-    }
-
-    function getBelongingTerm(memberId, dateStr) {
-        for(var i=0; i<terms.length; i++) {
-            var t = terms[i];
-            if(dateStr >= t.startDate && dateStr <= t.endDate && t.members && t.members[memberId]) return t;
-        }
-        return null;
-    }
-
-    function loadAttendance() {
-        var date = document.getElementById('attDate').value;
-        if(!date) return;
-        document.getElementById('attDayOfWeek').innerText = '(' + getDayName(date) + '요일)';
-        if(!attendances[date]) attendances[date] = {};
-        var tbody = document.getElementById('attendanceTableBody');
-        tbody.innerHTML = '';
-
-        members.forEach(function(m) {
-            var attData = attendances[date][m.id] || { attended: false, type: 'regular', lessons: { pre: false, review: false, main: false, after10: false }, paid: false };
-            var prevCount = getPreviousAttendanceCount(m.id, date);
-            var isFirst = (prevCount === 0);
-            var belongingTerm = getBelongingTerm(m.id, date);
-            var isShowDay = belongingTerm && belongingTerm.showDate === date;
-            var selectedType = attData.type || (isFirst ? 'free' : (isShowDay ? 'term_show' : 'regular'));
-            var feeText = "";
-
-            if(selectedType === 'free') feeText = " (무료)";
-            else if(selectedType === 'regular') feeText = ' (' + feeSettings.regular.toLocaleString() + '원)';
-            else if(selectedType === 'performer') feeText = ' (' + feeSettings.performer.toLocaleString() + '원)';
-            else if(selectedType === 'eventDay') feeText = ' (' + feeSettings.eventDay.toLocaleString() + '원)';
-            else if(selectedType === 'term_show') feeText = " (5,000원 - 기수공연일)";
-            else if(selectedType.indexOf('term_') === 0) feeText = ' (' + selectedType.replace('term_', '') + ' 무료입장)';
-
-            var l = attData.lessons || {};
-            tbody.innerHTML += '<tr><td><strong>' + m.nickname + '</strong> (' + m.name + ')<br><small style="color:#666;">' + (m.role || '일반회원') + '</small></td><td><div class="checkbox-group"><label><input type="checkbox" ' + (l.pre ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', ' + m.id + ', \'pre\', this.checked)"> 앞강습</label><label><input type="checkbox" ' + (l.review ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', ' + m.id + ', \'review\', this.checked)"> 복습</label><label><input type="checkbox" ' + (l.main ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', ' + m.id + ', \'main\', this.checked)"> 본강습</label><label><input type="checkbox" ' + (l.after10 ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', ' + m.id + ', \'after10\', this.checked)"> 10시이후</label></div></td><td><input type="checkbox" ' + (attData.attended ? 'checked' : '') + ' onchange="toggleAttField(\'' + date + '\', ' + m.id + ', \'attended\', this.checked)"> <select onchange="toggleAttField(\'' + date + '\', ' + m.id + ', \'type\', this.value)" ' + (!attData.attended ? 'disabled' : '') + '><option value="free" ' + (selectedType === 'free' ? 'selected' : '') + '>첫출석 (무료)</option><option value="regular" ' + (selectedType === 'regular' ? 'selected' : '') + '>정기출석 (' + feeSettings.regular.toLocaleString() + '원)</option><option value="performer" ' + (selectedType === 'performer' ? 'selected' : '') + '>공연자출석 (' + feeSettings.performer.toLocaleString() + '원)</option><option value="eventDay" ' + (selectedType === 'eventDay' ? 'selected' : '') + '>행사일출석 (' + feeSettings.eventDay.toLocaleString() + '원)</option>' + (belongingTerm ? '<option value="term_' + belongingTerm.name + '" ' + (selectedType === 'term_' + belongingTerm.name ? 'selected' : '') + '>' + belongingTerm.name + ' (무료입장)</option>' : '') + (belongingTerm && belongingTerm.showDate ? '<option value="term_show" ' + (selectedType === 'term_show' ? 'selected' : '') + '>🎭 ' + belongingTerm.name + ' 공연일 (5,000원)</option>' : '') + '</select></td><td>' + ((selectedType === 'free' || (selectedType.indexOf('term_') === 0 && selectedType !== 'term_show')) ? '<strong>무료 대상</strong>' : '<input type="checkbox" ' + (attData.paid ? 'checked' : '') + ' ' + (!attData.attended ? 'disabled' : '') + ' onchange="toggleAttField(\'' + date + '\', ' + m.id + ', \'paid\', this.checked)"> <span>' + feeText + '</span>') + '</td></tr>';
-        });
-    }
-
-    function toggleLesson(date, memberId, lessonKey, value) {
-        if(!attendances[date]) attendances[date] = {};
-        if(!attendances[date][memberId]) attendances[date][memberId] = { attended: false, type: 'regular', lessons: {}, paid: false };
-        if(!attendances[date][memberId].lessons) attendances[date][memberId].lessons = {};
-        attendances[date][memberId].lessons[lessonKey] = value;
-        saveData();
-    }
-
-    function toggleAttField(date, memberId, field, value) {
-        if(!attendances[date]) attendances[date] = {};
-        if(!attendances[date][memberId]) attendances[date][memberId] = { attended: false, type: 'regular', lessons: {}, paid: false };
-        attendances[date][memberId][field] = value;
-        if(field === 'attended' && !value) attendances[date][memberId].paid = false;
-        saveData(); loadAttendance();
-    }
-
-    function openFeeSettingModal() {
-        document.getElementById('feeRegular').value = feeSettings.regular;
-        document.getElementById('feePerformer').value = feeSettings.performer;
-        document.getElementById('feeEventDay').value = feeSettings.eventDay;
-        document.getElementById('feeSettingModal').style.display = 'block';
-    }
-
-    function saveFeeSettings() {
-        feeSettings.regular = Number(document.getElementById('feeRegular').value);
-        feeSettings.performer = Number(document.getElementById('feePerformer').value);
-        feeSettings.eventDay = Number(document.getElementById('feeEventDay').value);
-        localStorage.setItem('club_fees', JSON.stringify(feeSettings));
-        closeModal('feeSettingModal'); loadAttendance();
     }
 
     function initStatsView() {
@@ -717,10 +803,15 @@
         });
     }
 
-    function addEvent(e) {
+    async function addEvent(e) {
         e.preventDefault();
-        events.push({ id: Date.now(), name: document.getElementById('eventName').value, date: document.getElementById('eventDate').value });
-        saveData(); document.getElementById('eventForm').reset(); renderEventOptions();
+        const newEvent = { name: document.getElementById('eventName').value, date: document.getElementById('eventDate').value };
+        try {
+            const docRef = await window.fs.addDoc(window.fs.collection(window.db, "events"), newEvent);
+            events.push({ id: docRef.id, ...newEvent });
+            document.getElementById('eventForm').reset(); 
+            renderEventOptions();
+        } catch(e) { console.error("이벤트 추가 실패:", e); }
     }
 
     function renderEventOptions() {
@@ -773,55 +864,17 @@
         });
     }
 
-    function deleteEvent() {
+    async function deleteEvent() {
         var eventId = document.getElementById('eventSelect').value;
         if(confirm('이벤트를 삭제하시겠습니까?')) {
-            events = events.filter(function(e) { return e.id != eventId; });
-            saveData(); renderEventOptions();
+            try {
+                await window.fs.deleteDoc(window.fs.doc(window.db, "events", eventId));
+                events = events.filter(function(e) { return e.id != eventId; });
+                renderEventOptions();
+            } catch(e) { console.error("이벤트 삭제 실패:", e); }
         }
     }
-
-    function saveData() {
-        localStorage.setItem('club_members', JSON.stringify(members));
-        localStorage.setItem('club_terms', JSON.stringify(terms));
-        localStorage.setItem('club_attendances', JSON.stringify(attendances));
-        localStorage.setItem('club_events', JSON.stringify(events));
-    }
-
-    renderMembers();
 </script>
 
-<!-- Firebase 모듈 스크립트 -->
-<script type="module">
-  // 1. Firebase 라이브러리 모듈 불러오기
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    getDocs, 
-    doc, 
-    deleteDoc 
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  // 2. 내 Firebase 설정 정보 (콘솔에서 확인한 내 키 값으로 대체)
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "1234567890",
-    appId: "1:1234567890:web:abcdef"
-  };
-
-  // 3. Firebase 및 Firestore DB 초기화
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // HTML 버튼 이벤트 등 일반 함수에서 접근할 수 있도록 window 객체에 등록
-  window.db = db;
-  window.fs = { collection, addDoc, getDocs, doc, deleteDoc };
-</script>
-    
 </body>
 </html>
