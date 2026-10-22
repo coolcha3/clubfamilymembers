@@ -5,231 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>동호회 통합 관리 프로그램</title>
     <style>
-        :root {
-            --primary-color: #4a90e2;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #dddddd;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            flex: 1;
-            min-width: 130px;
-            padding: 12px;
-            background-color: #e0e0e0;
-            border: none;
-            border-radius: 8px 8px 0 0;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .form-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        input, select, button {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        button.btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button.btn-success {
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button.btn-secondary {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            padding: 6px 12px;
-            border-radius: 4px;
-        }
-
-        button.btn-sm {
-            padding: 4px 8px;
-            font-size: 12px;
-            margin: 2px;
-        }
-
-        .delete-btn {
-            background-color: #ff5c5c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        th {
-            background-color: #f0f4f8;
-        }
-
-        .badge {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
+        :root { --primary-color: #4a90e2; --bg-color: #f4f7f6; --card-bg: #ffffff; --text-color: #333; --border-color: #ddd; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 20px; color: var(--primary-color); }
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 130px; padding: 12px; background-color: #e0e0e0; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; }
+        .tab-btn.active { background-color: var(--primary-color); color: white; }
+        .tab-content { display: none; background: var(--card-bg); padding: 20px; border-radius: 0 0 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .tab-content.active { display: block; }
+        .form-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        input, select, button { padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 14px; }
+        button.btn-primary { background-color: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: bold; }
+        button.btn-success { background-color: #2ecc71; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button.btn-secondary { background-color: #6c757d; color: white; border: none; cursor: pointer; font-weight: bold; padding: 6px 12px; border-radius: 4px; }
+        button.btn-sm { padding: 4px 8px; font-size: 12px; margin: 2px; }
+        .delete-btn { background-color: #ff5c5c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: center; font-size: 14px; }
+        th { background-color: #f0f4f8; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; }
         .badge-regular { background-color: #3498db; color: white; }
-
-        .filter-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            background: #eef5ff;
-            padding: 12px;
-            border-radius: 5px;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .stats-box {
-            background: #f8f9fa;
-            border-left: 4px solid var(--primary-color);
-            padding: 12px;
-            margin-bottom: 15px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 650px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .checkbox-group {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .checkbox-group label {
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        textarea.attendance-output {
-            width: 100%;
-            height: 300px;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            resize: vertical;
-        }
+        .filter-section { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #eef5ff; padding: 12px; border-radius: 5px; flex-wrap: wrap; justify-content: space-between; }
+        .stats-box { background: #f8f9fa; border-left: 4px solid var(--primary-color); padding: 12px; margin-bottom: 15px; }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fff; margin: 5% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 650px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .checkbox-group { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
+        .checkbox-group label { font-size: 13px; cursor: pointer; }
+        textarea.attendance-output { width: 100%; height: 300px; padding: 12px; font-family: monospace; font-size: 14px; line-height: 1.6; border: 1px solid var(--border-color); border-radius: 5px; resize: vertical; }
     </style>
 </head>
 <body>
@@ -239,4 +44,728 @@
 
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab(this, 'memberTab')">회원 명단 관리</button>
-        <button class="tab-btn" onclick="switchTab(this, 'term
+        <button class="tab-btn" onclick="switchTab(this, 'termTab')">기수 관리</button>
+        <button class="tab-btn" onclick="switchTab(this, 'attendanceTab')">출석 및 회비 관리</button>
+        <button class="tab-btn" onclick="switchTab(this, 'statsTab')">연도별/기간별 참석 조회</button>
+        <button class="tab-btn" onclick="switchTab(this, 'eventTab')">이벤트 관리</button>
+    </div>
+
+    <!-- 1. 회원 명단 관리 -->
+    <div id="memberTab" class="tab-content active">
+        <h2>회원 등록 및 관리</h2>
+        <form id="memberForm" onsubmit="addMember(event)">
+            <div class="form-group">
+                <input type="text" id="mNickname" placeholder="닉네임" required>
+                <input type="text" id="mName" placeholder="이름" required>
+                <input type="date" id="mBirth" onchange="calculateAge('mBirth', 'mAge')" required>
+                <input type="number" id="mAge" placeholder="나이(자동)" readonly>
+                <select id="mRole">
+                    <option value="일반회원">일반회원</option>
+                    <option value="시샵">시샵</option>
+                    <option value="운영진">운영진</option>
+                    <option value="서포터">서포터</option>
+                    <option value="명예회원">명예회원</option>
+                </select>
+                <input type="tel" id="mPhone" placeholder="전화번호" required>
+                <input type="email" id="mEmail" placeholder="이메일">
+                <button type="submit" class="btn-primary">회원 추가</button>
+            </div>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>닉네임</th>
+                    <th>이름</th>
+                    <th>생년월일(나이)</th>
+                    <th>구분</th>
+                    <th>전화번호</th>
+                    <th>이메일</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+            <tbody id="memberTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- 2. 기수 관리 -->
+    <div id="termTab" class="tab-content">
+        <h2>기수 등록 및 기수원 관리</h2>
+        <form id="termForm" onsubmit="addTerm(event)">
+            <div class="form-group">
+                <input type="text" id="termName" placeholder="기수명 (예: 81기)" required>
+                <input type="date" id="termStartDate" required>
+                <input type="date" id="termEndDate" required>
+                <input type="date" id="termShowDate">
+                <button type="submit" class="btn-primary">기수 등록</button>
+            </div>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>기수명</th>
+                    <th>기간 / 공연일</th>
+                    <th>기수원 및 직책</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+            <tbody id="termTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- 3. 출석 및 회비 관리 -->
+    <div id="attendanceTab" class="tab-content">
+        <h2>일자별 출석 & 회비 관리</h2>
+        <div class="filter-section">
+            <div>
+                <label for="attDate"><strong>출석 날짜:</strong></label>
+                <input type="date" id="attDate" onchange="loadAttendance()">
+                <span id="attDayOfWeek" style="font-weight: bold; color: #1a59a7;"></span>
+            </div>
+            <div>
+                <button class="btn-success" onclick="openGenerateTextModal()">📋 출석부 텍스트 생성</button>
+                <button class="btn-secondary" onclick="openFeeSettingModal()">⚙️ 회비 설정</button>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>닉네임(이름/구분)</th>
+                    <th>강습/시간 체크</th>
+                    <th>출석 구분</th>
+                    <th>정기 회비 입금 여부</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- 4. 연도별 / 기간별 참석 조회 -->
+    <div id="statsTab" class="tab-content">
+        <h2>회원별 / 연도별·기간별 참석 조회</h2>
+        <div class="filter-section" style="flex-direction: column; align-items: flex-start; gap: 12px;">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; width: 100%;">
+                <label><strong>조회 방식:</strong></label>
+                <select id="statSearchMode" onchange="toggleStatMode()">
+                    <option value="year">연도별 조회</option>
+                    <option value="range">기간 지정 조회</option>
+                </select>
+
+                <span id="yearSelectGroup">
+                    <label for="statYear"><strong>연도:</strong></label>
+                    <select id="statYear"></select>
+                </span>
+
+                <span id="rangeSelectGroup" style="display: none;">
+                    <label for="statStartDate"><strong>시작일:</strong></label>
+                    <input type="date" id="statStartDate">
+                    ~
+                    <label for="statEndDate"><strong>종료일:</strong></label>
+                    <input type="date" id="statEndDate">
+                </span>
+
+                <label for="statMember" style="margin-left: 10px;"><strong>회원:</strong></label>
+                <select id="statMember">
+                    <option value="">-- 회원 전체 보기 --</option>
+                </select>
+
+                <button class="btn-primary btn-sm" onclick="loadYearStats()" style="padding: 8px 15px;">🔍 조회하기</button>
+            </div>
+        </div>
+
+        <div id="statsSummary" class="stats-box">조회 조건에 맞춰 통계 정보가 표시됩니다.</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>닉네임(이름)</th>
+                    <th>참석 날짜 (요일)</th>
+                    <th>구분 (정기/이벤트/강습)</th>
+                    <th>입금/비고</th>
+                </tr>
+            </thead>
+            <tbody id="statsTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- 5. 이벤트 관리 -->
+    <div id="eventTab" class="tab-content">
+        <h2>이벤트 생성 및 출석자 자동 조회</h2>
+        <form id="eventForm" onsubmit="addEvent(event)">
+            <div class="form-group">
+                <input type="text" id="eventName" placeholder="이벤트 이름" required>
+                <input type="date" id="eventDate" required>
+                <button type="submit" class="btn-primary">이벤트 생성</button>
+            </div>
+        </form>
+
+        <div style="margin-top: 20px;">
+            <label for="eventSelect"><strong>이벤트 선택:</strong></label>
+            <select id="eventSelect" onchange="loadEventDetails()">
+                <option value="">-- 이벤트를 선택하세요 --</option>
+            </select>
+            <button id="deleteEventBtn" class="delete-btn btn-sm" style="display:none;" onclick="deleteEvent()">이벤트 삭제</button>
+        </div>
+
+        <div id="eventDetailSection" style="margin-top: 15px; display: none;">
+            <h3 id="eventTitleWithDay" style="margin-bottom: 10px;">이벤트 참석자 목록</h3>
+            <p id="eventSummaryText" style="font-size: 14px; color: #555; margin-bottom: 10px;"></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>닉네임(이름)</th>
+                        <th>회원 구분</th>
+                        <th>출석 구분</th>
+                        <th>회비 입금 여부</th>
+                    </tr>
+                </thead>
+                <tbody id="eventTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 모달 1: 출석부 텍스트 생성 -->
+<div id="generateTextModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('generateTextModal')">&times;</span>
+        <h3>📋 정모 출석부 자동 생성</h3>
+        <p style="font-size:13px; color:#666; margin-top:5px; margin-bottom:15px;">정보를 입력하면 게시용 출석부 텍스트가 완성됩니다.</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <label>회차: <input type="number" id="txtMeetingNum" value="1082"></label>
+            <label>기수 주차: <input type="text" id="txtWeekInfo" value="81기 7주차"></label>
+            <label>클럽명: <input type="text" id="txtClubName" value="부산방송댄스 패밀리"></label>
+        </div>
+        <button class="btn-primary" onclick="buildAttendanceText()" style="width:100%; margin-bottom:15px;">텍스트 생성하기</button>
+        <textarea id="attendanceTextOutput" class="attendance-output" readonly></textarea>
+        <button class="btn-success" onclick="copyAttendanceText()" style="width:100%; margin-top:10px;">📋 클립보드에 복사하기</button>
+    </div>
+</div>
+
+<!-- 모달 2: 회원 수정 -->
+<div id="editMemberModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('editMemberModal')">&times;</span>
+        <h3>회원 정보 수정</h3><br>
+        <input type="hidden" id="editMId">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label>닉네임: <input type="text" id="editMNickname"></label>
+            <label>이름: <input type="text" id="editMName"></label>
+            <label>생년월일: <input type="date" id="editMBirth" onchange="calculateAge('editMBirth', 'editMAge')"></label>
+            <label>나이: <input type="number" id="editMAge" readonly></label>
+            <label>회원구분: 
+                <select id="editMRole">
+                    <option value="일반회원">일반회원</option>
+                    <option value="시샵">시샵</option>
+                    <option value="운영진">운영진</option>
+                    <option value="서포터">서포터</option>
+                    <option value="명예회원">명예회원</option>
+                </select>
+            </label>
+            <label>전화번호: <input type="tel" id="editMPhone"></label>
+            <label>이메일: <input type="email" id="editMEmail"></label>
+            <button class="btn-primary" onclick="saveMemberEdit()">저장하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 모달 3: 기수원 관리 -->
+<div id="termMemberModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('termMemberModal')">&times;</span>
+        <h3 id="termMemberTitle">기수원 등록 및 관리</h3><br>
+        <input type="hidden" id="currentTermId">
+        <table>
+            <thead>
+                <tr><th>기수원 여부</th><th>닉네임(이름)</th><th>직책 구분</th></tr>
+            </thead>
+            <tbody id="termMemberListBody"></tbody>
+        </table><br>
+        <button class="btn-primary" onclick="saveTermMembers()" style="width:100%;">기수원 저장</button>
+    </div>
+</div>
+
+<!-- 모달 4: 회비 금액 설정 -->
+<div id="feeSettingModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('feeSettingModal')">&times;</span>
+        <h3>⚙️ 기본 회비 금액 설정</h3><br>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label>정기 출석 회비: <input type="number" id="feeRegular" value="10000"> 원</label>
+            <label>공연자 출석 회비: <input type="number" id="feePerformer" value="5000"> 원</label>
+            <label>행사일 출석 회비: <input type="number" id="feeEventDay" value="7000"> 원</label>
+            <button class="btn-primary" onclick="saveFeeSettings()">설정 저장</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+    var members = JSON.parse(localStorage.getItem('club_members')) || [];
+    var terms = JSON.parse(localStorage.getItem('club_terms')) || [];
+    var attendances = JSON.parse(localStorage.getItem('club_attendances')) || {};
+    var events = JSON.parse(localStorage.getItem('club_events')) || [];
+    var feeSettings = JSON.parse(localStorage.getItem('club_fees')) || { regular: 10000, performer: 5000, eventDay: 7000 };
+
+    document.getElementById('attDate').value = new Date().toISOString().substring(0, 10);
+
+    function switchTab(btnElement, tabId) {
+        var btns = document.querySelectorAll('.tab-btn');
+        for (var i = 0; i < btns.length; i++) { btns[i].classList.remove('active'); }
+        var contents = document.querySelectorAll('.tab-content');
+        for (var j = 0; j < contents.length; j++) { contents[j].classList.remove('active'); }
+        btnElement.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+
+        if(tabId === 'memberTab') renderMembers();
+        if(tabId === 'termTab') renderTerms();
+        if(tabId === 'attendanceTab') loadAttendance();
+        if(tabId === 'statsTab') initStatsView();
+        if(tabId === 'eventTab') renderEventOptions();
+    }
+
+    function getDayName(dateString) {
+        if (!dateString) return '';
+        var date = new Date(dateString + 'T00:00:00');
+        return DAYS[date.getDay()];
+    }
+
+    function calculateAge(birthId, ageId) {
+        var birthStr = document.getElementById(birthId).value;
+        if (!birthStr) return;
+        var birthDate = new Date(birthStr);
+        var today = new Date();
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+        document.getElementById(ageId).value = age;
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function openGenerateTextModal() {
+        document.getElementById('generateTextModal').style.display = 'block';
+        buildAttendanceText();
+    }
+
+    function buildAttendanceText() {
+        var dateStr = document.getElementById('attDate').value;
+        if (!dateStr) return;
+        var clubName = document.getElementById('txtClubName').value || '부산방송댄스 패밀리';
+        var meetingNum = document.getElementById('txtMeetingNum').value || '';
+        var weekInfo = document.getElementById('txtWeekInfo').value || '';
+        var dateParts = dateStr.split('-');
+        var formattedDate = dateParts[0] + '/' + dateParts[1] + '/' + dateParts[2];
+        var attDay = attendances[dateStr] || {};
+        
+        var execList = [], termList = [], regularList = [], newList = [], after10List = [];
+        var activeTerm = null;
+        for(var i=0; i<terms.length; i++) {
+            if(dateStr >= terms[i].startDate && dateStr <= terms[i].endDate) { activeTerm = terms[i]; break; }
+        }
+        var termName = activeTerm ? activeTerm.name : '기수';
+
+        members.forEach(function(m) {
+            var record = attDay[m.id];
+            if (record && record.attended) {
+                var nameStr = m.nickname;
+                if (record.lessons) {
+                    if (record.lessons.pre) nameStr += '(앞강습)';
+                    else if (record.lessons.review) nameStr += '(복습)';
+                    else if (record.lessons.main) nameStr += '(본강습)';
+                }
+                if (activeTerm && activeTerm.members && activeTerm.members[m.id]) {
+                    var tRole = activeTerm.members[m.id].role;
+                    if (tRole && tRole !== '기수원') nameStr += '(' + tRole + ')';
+                }
+                if (record.lessons && record.lessons.after10) { after10List.push(nameStr); }
+                else if (m.role === '시샵' || m.role === '운영진') { execList.push(nameStr); }
+                else if (activeTerm && activeTerm.members && activeTerm.members[m.id]) { termList.push(nameStr); }
+                else if (record.type === 'free') { newList.push(nameStr); }
+                else { regularList.push(nameStr); }
+            }
+        });
+
+        var totalCount = execList.length + termList.length + regularList.length + newList.length + after10List.length;
+        var txt = '"' + clubName + '[' + formattedDate + '] ' + meetingNum + '번째(' + weekInfo + ') 정모 출석부\n\n';
+        txt += '☆  운영진 (' + execList.length + '명)\n' + (execList.length > 0 ? execList.join(' / ') + '\n\n' : '無\n\n');
+        txt += '☆ ' + termName + '(' + termList.length + '명)\n' + (termList.length > 0 ? termList.join(' / ') + '\n\n' : '無\n\n');
+        txt += '☆ 정회원(' + regularList.length + '명)\n' + (regularList.length > 0 ? regularList.join(' / ') + '\n\n' : '無\n\n');
+        txt += '☆ 신입(' + newList.length + '명)\n' + (newList.length > 0 ? newList.join(' / ') + '\n\n' : '無\n\n');
+        txt += '☆ 10시이후 (' + after10List.length + '명)\n' + (after10List.length > 0 ? after10List.join(' / ') + '\n\n' : '無\n\n');
+        txt += '총 ' + totalCount + '명"';
+        document.getElementById('attendanceTextOutput').value = txt;
+    }
+
+    function copyAttendanceText() {
+        var textarea = document.getElementById('attendanceTextOutput');
+        textarea.select();
+        document.execCommand('copy');
+        alert('출석부 텍스트가 복사되었습니다!');
+    }
+
+    function addMember(e) {
+        e.preventDefault();
+        members.push({
+            id: Date.now(),
+            nickname: document.getElementById('mNickname').value,
+            name: document.getElementById('mName').value,
+            birth: document.getElementById('mBirth').value,
+            age: document.getElementById('mAge').value,
+            role: document.getElementById('mRole').value,
+            phone: document.getElementById('mPhone').value,
+            email: document.getElementById('mEmail').value
+        });
+        saveData(); renderMembers(); document.getElementById('memberForm').reset();
+    }
+
+    function renderMembers() {
+        var tbody = document.getElementById('memberTableBody');
+        tbody.innerHTML = '';
+        members.forEach(function(m) {
+            tbody.innerHTML += '<tr><td>' + m.nickname + '</td><td>' + m.name + '</td><td>' + m.birth + ' (' + m.age + '세)</td><td><span class="badge badge-regular">' + (m.role || '일반회원') + '</span></td><td>' + m.phone + '</td><td>' + (m.email || '-') + '</td><td><button class="btn-secondary btn-sm" onclick="openEditMemberModal(' + m.id + ')">수정</button> <button class="delete-btn btn-sm" onclick="deleteMember(' + m.id + ')">삭제</button></td></tr>';
+        });
+    }
+
+    function openEditMemberModal(id) {
+        var m = members.find(function(mem) { return mem.id === id; });
+        if(!m) return;
+        document.getElementById('editMId').value = m.id;
+        document.getElementById('editMNickname').value = m.nickname;
+        document.getElementById('editMName').value = m.name;
+        document.getElementById('editMBirth').value = m.birth;
+        document.getElementById('editMAge').value = m.age;
+        document.getElementById('editMRole').value = m.role || '일반회원';
+        document.getElementById('editMPhone').value = m.phone;
+        document.getElementById('editMEmail').value = m.email || '';
+        document.getElementById('editMemberModal').style.display = 'block';
+    }
+
+    function saveMemberEdit() {
+        var id = Number(document.getElementById('editMId').value);
+        var m = members.find(function(mem) { return mem.id === id; });
+        if(m) {
+            m.nickname = document.getElementById('editMNickname').value;
+            m.name = document.getElementById('editMName').value;
+            m.birth = document.getElementById('editMBirth').value;
+            m.age = document.getElementById('editMAge').value;
+            m.role = document.getElementById('editMRole').value;
+            m.phone = document.getElementById('editMPhone').value;
+            m.email = document.getElementById('editMEmail').value;
+            saveData(); renderMembers(); closeModal('editMemberModal');
+        }
+    }
+
+    function deleteMember(id) {
+        if(confirm('정말 삭제하시겠습니까?')) {
+            members = members.filter(function(m) { return m.id !== id; });
+            saveData(); renderMembers();
+        }
+    }
+
+    function addTerm(e) {
+        e.preventDefault();
+        terms.push({
+            id: Date.now(),
+            name: document.getElementById('termName').value,
+            startDate: document.getElementById('termStartDate').value,
+            endDate: document.getElementById('termEndDate').value,
+            showDate: document.getElementById('termShowDate').value || '',
+            members: {}
+        });
+        saveData(); renderTerms(); document.getElementById('termForm').reset();
+    }
+
+    function renderTerms() {
+        var tbody = document.getElementById('termTableBody');
+        tbody.innerHTML = '';
+        terms.forEach(function(t) {
+            var memberListStr = [];
+            Object.keys(t.members || {}).forEach(function(mId) {
+                var m = members.find(function(mem) { return mem.id == mId; });
+                if(m) { memberListStr.push(m.nickname + '(' + (t.members[mId].role || '기수원') + ')'); }
+            });
+            tbody.innerHTML += '<tr><td><strong>' + t.name + '</strong></td><td>' + t.startDate + ' ~ ' + t.endDate + (t.showDate ? '<br><small style="color:#d9534f;">🎭 공연일: ' + t.showDate + '</small>' : '') + '</td><td>' + (memberListStr.length > 0 ? memberListStr.join(', ') : '기수원 없음') + '</td><td><button class="btn-success btn-sm" onclick="openTermMemberModal(' + t.id + ')">➕ 기수원 관리</button> <button class="delete-btn btn-sm" onclick="deleteTerm(' + t.id + ')">삭제</button></td></tr>';
+        });
+    }
+
+    function openTermMemberModal(termId) {
+        document.getElementById('currentTermId').value = termId;
+        var term = terms.find(function(t) { return t.id === termId; });
+        document.getElementById('termMemberTitle').innerText = term.name + ' 기수원 및 직책 관리';
+        var tbody = document.getElementById('termMemberListBody');
+        tbody.innerHTML = '';
+
+        members.forEach(function(m) {
+            var isMember = term.members && term.members[m.id];
+            var currentRole = isMember ? term.members[m.id].role : '기수원';
+            tbody.innerHTML += '<tr><td><input type="checkbox" id="chk-term-' + m.id + '" ' + (isMember ? 'checked' : '') + '></td><td>' + m.nickname + ' (' + m.name + ')</td><td><select id="role-term-' + m.id + '"><option value="기수원" ' + (currentRole === '기수원' ? 'selected' : '') + '>기수원</option><option value="기장" ' + (currentRole === '기장' ? 'selected' : '') + '>기장</option><option value="부기장" ' + (currentRole === '부기장' ? 'selected' : '') + '>부기장</option><option value="총무" ' + (currentRole === '총무' ? 'selected' : '') + '>총무</option></select></td></tr>';
+        });
+        document.getElementById('termMemberModal').style.display = 'block';
+    }
+
+    function saveTermMembers() {
+        var termId = Number(document.getElementById('currentTermId').value);
+        var term = terms.find(function(t) { return t.id === termId; });
+        if(!term) return;
+        term.members = {};
+        members.forEach(function(m) {
+            var chkBox = document.getElementById('chk-term-' + m.id);
+            if(chkBox && chkBox.checked) {
+                var roleSelect = document.getElementById('role-term-' + m.id);
+                term.members[m.id] = { role: roleSelect ? roleSelect.value : '기수원' };
+            }
+        });
+        saveData(); renderTerms(); closeModal('termMemberModal');
+    }
+
+    function deleteTerm(id) {
+        if(confirm('기수 정보를 삭제하시겠습니까?')) {
+            terms = terms.filter(function(t) { return t.id !== id; });
+            saveData(); renderTerms();
+        }
+    }
+
+    function getPreviousAttendanceCount(memberId, currentDate) {
+        var count = 0;
+        var allDates = Object.keys(attendances).sort();
+        for (var i=0; i<allDates.length; i++) {
+            if (allDates[i] >= currentDate) break;
+            if (attendances[allDates[i]][memberId] && attendances[allDates[i]][memberId].attended) count++;
+        }
+        return count;
+    }
+
+    function getBelongingTerm(memberId, dateStr) {
+        for(var i=0; i<terms.length; i++) {
+            var t = terms[i];
+            if(dateStr >= t.startDate && dateStr <= t.endDate && t.members && t.members[memberId]) return t;
+        }
+        return null;
+    }
+
+    function loadAttendance() {
+        var date = document.getElementById('attDate').value;
+        if(!date) return;
+        document.getElementById('attDayOfWeek').innerText = '(' + getDayName(date) + '요일)';
+        if(!attendances[date]) attendances[date] = {};
+        var tbody = document.getElementById('attendanceTableBody');
+        tbody.innerHTML = '';
+
+        members.forEach(function(m) {
+            var attData = attendances[date][m.id] || { attended: false, type: 'regular', lessons: { pre: false, review: false, main: false, after10: false }, paid: false };
+            var prevCount = getPreviousAttendanceCount(m.id, date);
+            var isFirst = (prevCount === 0);
+            var belongingTerm = getBelongingTerm(m.id, date);
+            var isShowDay = belongingTerm && belongingTerm.showDate === date;
+            var selectedType = attData.type || (isFirst ? 'free' : (isShowDay ? 'term_show' : 'regular'));
+            var feeText = "";
+
+            if(selectedType === 'free') feeText = " (무료)";
+            else if(selectedType === 'regular') feeText = ' (' + feeSettings.regular.toLocaleString() + '원)';
+            else if(selectedType === 'performer') feeText = ' (' + feeSettings.performer.toLocaleString() + '원)';
+            else if(selectedType === 'eventDay') feeText = ' (' + feeSettings.eventDay.toLocaleString() + '원)';
+            else if(selectedType === 'term_show') feeText = " (5,000원 - 기수공연일)";
+            else if(selectedType.indexOf('term_') === 0) feeText = ' (' + selectedType.replace('term_', '') + ' 무료입장)';
+
+            var l = attData.lessons || {};
+            tbody.innerHTML += '<tr><td><strong>' + m.nickname + '</strong> (' + m.name + ')<br><small style="color:#666;">' + (m.role || '일반회원') + '</small></td><td><div class="checkbox-group"><label><input type="checkbox" ' + (l.pre ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', ' + m.id + ', \'pre\', this.checked)"> 앞강습</label><label><input type="checkbox" ' + (l.review ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', ' + m.id + ', \'review\', this.checked)"> 복습</label><label><input type="checkbox" ' + (l.main ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', ' + m.id + ', \'main\', this.checked)"> 본강습</label><label><input type="checkbox" ' + (l.after10 ? 'checked' : '') + ' onchange="toggleLesson(\'' + date + '\', ' + m.id + ', \'after10\', this.checked)"> 10시이후</label></div></td><td><input type="checkbox" ' + (attData.attended ? 'checked' : '') + ' onchange="toggleAttField(\'' + date + '\', ' + m.id + ', \'attended\', this.checked)"> <select onchange="toggleAttField(\'' + date + '\', ' + m.id + ', \'type\', this.value)" ' + (!attData.attended ? 'disabled' : '') + '><option value="free" ' + (selectedType === 'free' ? 'selected' : '') + '>첫출석 (무료)</option><option value="regular" ' + (selectedType === 'regular' ? 'selected' : '') + '>정기출석 (' + feeSettings.regular.toLocaleString() + '원)</option><option value="performer" ' + (selectedType === 'performer' ? 'selected' : '') + '>공연자출석 (' + feeSettings.performer.toLocaleString() + '원)</option><option value="eventDay" ' + (selectedType === 'eventDay' ? 'selected' : '') + '>행사일출석 (' + feeSettings.eventDay.toLocaleString() + '원)</option>' + (belongingTerm ? '<option value="term_' + belongingTerm.name + '" ' + (selectedType === 'term_' + belongingTerm.name ? 'selected' : '') + '>' + belongingTerm.name + ' (무료입장)</option>' : '') + (belongingTerm && belongingTerm.showDate ? '<option value="term_show" ' + (selectedType === 'term_show' ? 'selected' : '') + '>🎭 ' + belongingTerm.name + ' 공연일 (5,000원)</option>' : '') + '</select></td><td>' + ((selectedType === 'free' || (selectedType.indexOf('term_') === 0 && selectedType !== 'term_show')) ? '<strong>무료 대상</strong>' : '<input type="checkbox" ' + (attData.paid ? 'checked' : '') + ' ' + (!attData.attended ? 'disabled' : '') + ' onchange="toggleAttField(\'' + date + '\', ' + m.id + ', \'paid\', this.checked)"> <span>' + feeText + '</span>') + '</td></tr>';
+        });
+    }
+
+    function toggleLesson(date, memberId, lessonKey, value) {
+        if(!attendances[date]) attendances[date] = {};
+        if(!attendances[date][memberId]) attendances[date][memberId] = { attended: false, type: 'regular', lessons: {}, paid: false };
+        if(!attendances[date][memberId].lessons) attendances[date][memberId].lessons = {};
+        attendances[date][memberId].lessons[lessonKey] = value;
+        saveData();
+    }
+
+    function toggleAttField(date, memberId, field, value) {
+        if(!attendances[date]) attendances[date] = {};
+        if(!attendances[date][memberId]) attendances[date][memberId] = { attended: false, type: 'regular', lessons: {}, paid: false };
+        attendances[date][memberId][field] = value;
+        if(field === 'attended' && !value) attendances[date][memberId].paid = false;
+        saveData(); loadAttendance();
+    }
+
+    function openFeeSettingModal() {
+        document.getElementById('feeRegular').value = feeSettings.regular;
+        document.getElementById('feePerformer').value = feeSettings.performer;
+        document.getElementById('feeEventDay').value = feeSettings.eventDay;
+        document.getElementById('feeSettingModal').style.display = 'block';
+    }
+
+    function saveFeeSettings() {
+        feeSettings.regular = Number(document.getElementById('feeRegular').value);
+        feeSettings.performer = Number(document.getElementById('feePerformer').value);
+        feeSettings.eventDay = Number(document.getElementById('feeEventDay').value);
+        localStorage.setItem('club_fees', JSON.stringify(feeSettings));
+        closeModal('feeSettingModal'); loadAttendance();
+    }
+
+    function initStatsView() {
+        var yearSelect = document.getElementById('statYear');
+        var memberSelect = document.getElementById('statMember');
+        var currentYear = new Date().getFullYear();
+        var yearsSet = {}; yearsSet[currentYear] = true;
+        Object.keys(attendances).forEach(function(d) { yearsSet[new Date(d).getFullYear()] = true; });
+        events.forEach(function(e) { if(e.date) yearsSet[new Date(e.date).getFullYear()] = true; });
+
+        var yearsArr = Object.keys(yearsSet).sort(function(a,b){return b-a;});
+        yearSelect.innerHTML = '';
+        yearsArr.forEach(function(y) { yearSelect.innerHTML += '<option value="' + y + '">' + y + '년</option>'; });
+
+        memberSelect.innerHTML = '<option value="">-- 회원 전체 보기 --</option>';
+        members.forEach(function(m) { memberSelect.innerHTML += '<option value="' + m.id + '">' + m.nickname + ' (' + m.name + ')</option>'; });
+
+        var today = new Date(); var lastMonth = new Date(); lastMonth.setMonth(today.getMonth() - 1);
+        document.getElementById('statEndDate').value = today.toISOString().substring(0, 10);
+        document.getElementById('statStartDate').value = lastMonth.toISOString().substring(0, 10);
+        toggleStatMode();
+    }
+
+    function toggleStatMode() {
+        var mode = document.getElementById('statSearchMode').value;
+        if(mode === 'year') {
+            document.getElementById('yearSelectGroup').style.display = 'inline';
+            document.getElementById('rangeSelectGroup').style.display = 'none';
+        } else {
+            document.getElementById('yearSelectGroup').style.display = 'none';
+            document.getElementById('rangeSelectGroup').style.display = 'inline';
+        }
+        loadYearStats();
+    }
+
+    function loadYearStats() {
+        var mode = document.getElementById('statSearchMode').value;
+        var selectedMemberId = document.getElementById('statMember').value;
+        var tbody = document.getElementById('statsTableBody');
+        tbody.innerHTML = '';
+        var records = [];
+        var selectedYear = document.getElementById('statYear').value;
+        var startDate = document.getElementById('statStartDate').value;
+        var endDate = document.getElementById('statEndDate').value;
+
+        Object.keys(attendances).forEach(function(date) {
+            var isValidDate = false;
+            if(mode === 'year' && date.indexOf(selectedYear) === 0) isValidDate = true;
+            if(mode === 'range' && date >= startDate && date <= endDate) isValidDate = true;
+
+            if (isValidDate) {
+                Object.keys(attendances[date]).forEach(function(mId) {
+                    var item = attendances[date][mId];
+                    if (item.attended && (!selectedMemberId || selectedMemberId == mId)) {
+                        var m = members.find(function(mem) { return mem.id == mId; });
+                        var lessonArr = [];
+                        if(item.lessons && item.lessons.pre) lessonArr.push('앞강습');
+                        if(item.lessons && item.lessons.review) lessonArr.push('복습');
+                        if(item.lessons && item.lessons.main) lessonArr.push('본강습');
+                        if(item.lessons && item.lessons.after10) lessonArr.push('10시이후');
+
+                        records.push({
+                            date: date,
+                            dayName: getDayName(date),
+                            memberName: m ? m.nickname + ' (' + m.name + ')' : '삭제된 회원',
+                            type: '정기출석 [' + (lessonArr.join(',') || '기본') + ']',
+                            info: item.paid ? '납부완료' : '미납/무료'
+                        });
+                    }
+                });
+            }
+        });
+
+        records.sort(function(a,b) { return b.date.localeCompare(a.date); });
+        var summaryBox = document.getElementById('statsSummary');
+        var queryInfo = (mode === 'year') ? selectedYear + '년' : startDate + ' ~ ' + endDate;
+        summaryBox.innerHTML = '조회 범위 [' + queryInfo + ']: 총 <strong>' + records.length + '회</strong> 참석 기록이 있습니다.';
+
+        if(records.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4">조회된 내역이 없습니다.</td></tr>';
+            return;
+        }
+
+        records.forEach(function(r) {
+            tbody.innerHTML += '<tr><td>' + r.memberName + '</td><td>' + r.date + ' (' + r.dayName + ')</td><td>' + r.type + '</td><td>' + r.info + '</td></tr>';
+        });
+    }
+
+    function addEvent(e) {
+        e.preventDefault();
+        events.push({ id: Date.now(), name: document.getElementById('eventName').value, date: document.getElementById('eventDate').value });
+        saveData(); document.getElementById('eventForm').reset(); renderEventOptions();
+    }
+
+    function renderEventOptions() {
+        var select = document.getElementById('eventSelect');
+        select.innerHTML = '<option value="">-- 이벤트를 선택하세요 --</option>';
+        events.forEach(function(evt) { select.innerHTML += '<option value="' + evt.id + '">' + evt.name + ' [' + evt.date + ' (' + getDayName(evt.date) + ')]</option>'; });
+        document.getElementById('eventDetailSection').style.display = 'none';
+        document.getElementById('deleteEventBtn').style.display = 'none';
+    }
+
+    function loadEventDetails() {
+        var eventId = document.getElementById('eventSelect').value;
+        var section = document.getElementById('eventDetailSection');
+        if(!eventId) { section.style.display = 'none'; document.getElementById('deleteEventBtn').style.display = 'none'; return; }
+
+        section.style.display = 'block'; document.getElementById('deleteEventBtn').style.display = 'inline-block';
+        var currentEvent = events.find(function(e) { return e.id == eventId; });
+        var eventDate = currentEvent.date;
+        document.getElementById('eventTitleWithDay').innerText = currentEvent.name + ' (' + eventDate + ' ' + getDayName(eventDate) + '요일)';
+
+        var tbody = document.getElementById('eventTableBody');
+        tbody.innerHTML = '';
+        var attDay = attendances[eventDate] || {};
+        var attendedMembers = [];
+
+        members.forEach(function(m) {
+            var record = attDay[m.id];
+            if (record && record.attended) {
+                var typeText = "일반출석";
+                if (record.type === 'free') typeText = "첫출석 (무료)";
+                else if (record.type === 'performer') typeText = "공연자출석";
+                else if (record.type === 'eventDay') typeText = "행사일출석";
+                else if (record.type === 'term_show') typeText = "기수공연일";
+                else if (record.type && record.type.indexOf('term_') === 0) typeText = "기수 (무료)";
+
+                attendedMembers.push({ member: m, typeText: typeText, paid: record.paid, isFree: (record.type === 'free' || (record.type && record.type.indexOf('term_') === 0 && record.type !== 'term_show')) });
+            }
+        });
+
+        document.getElementById('eventSummaryText').innerText = '총 참석자 수: ' + attendedMembers.length + '명 (출석 탭 데이터 자동 연동)';
+        if (attendedMembers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">해당 이벤트 날짜에 [출석 및 회비 관리] 탭에서 출석체크된 회원이 없습니다.</td></tr>';
+            return;
+        }
+
+        attendedMembers.forEach(function(item, index) {
+            var m = item.member;
+            var paidStatus = item.isFree ? '<span class="badge badge-regular">무료 대상</span>' : (item.paid ? '<span style="color:#2ecc71; font-weight:bold;">입금 완료</span>' : '<span style="color:#e74c3c; font-weight:bold;">미납</span>');
+            tbody.innerHTML += '<tr><td>' + (index + 1) + '</td><td><strong>' + m.nickname + '</strong> (' + m.name + ')</td><td>' + (m.role || '일반회원') + '</td><td>' + item.typeText + '</td><td>' + paidStatus + '</td></tr>';
+        });
+    }
+
+    function deleteEvent() {
+        var eventId = document.getElementById('eventSelect').value;
+        if(confirm('이벤트를 삭제하시겠습니까?')) {
+            events = events.filter(function(e) { return e.id != eventId; });
+            saveData(); renderEventOptions();
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem('club_members', JSON.stringify(members));
+        localStorage.setItem('club_terms', JSON.stringify(terms));
+        localStorage.setItem('club_attendances', JSON.stringify(attendances));
+        localStorage.setItem('club_events', JSON.stringify(events));
+    }
+
+    renderMembers();
+</script>
+
+</body>
+</html>
