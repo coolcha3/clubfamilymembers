@@ -1,6 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <!-- Firebase SDK 로드 (v10 이상 모듈 방식) -->
+<script type="module">
+  // Firebase 라이브러리 불러오기
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  // 1단계에서 확인한 내 Firebase 설정 값 붙여넣기
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "...",
+    appId: "..."
+  };
+
+  // Firebase 및 Firestore 초기화
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 글로벌 영역에서 사용할 수 있도록 window에 등록 (선택사항)
+  window.db = db;
+  window.dbFunctions = { collection, addDoc, getDocs, deleteDoc, doc };
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>패밀리 통합 관리 프로그램</title>
