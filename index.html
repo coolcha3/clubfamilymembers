@@ -791,5 +791,37 @@
     renderMembers();
 </script>
 
+<!-- Firebase 모듈 스크립트 -->
+<script type="module">
+  // 1. Firebase 라이브러리 모듈 불러오기
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    getDocs, 
+    doc, 
+    deleteDoc 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  // 2. 내 Firebase 설정 정보 (콘솔에서 확인한 내 키 값으로 대체)
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "1234567890",
+    appId: "1:1234567890:web:abcdef"
+  };
+
+  // 3. Firebase 및 Firestore DB 초기화
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // HTML 버튼 이벤트 등 일반 함수에서 접근할 수 있도록 window 객체에 등록
+  window.db = db;
+  window.fs = { collection, addDoc, getDocs, doc, deleteDoc };
+</script>
+    
 </body>
 </html>
